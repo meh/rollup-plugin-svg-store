@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-svg-store",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Bundles all SVG icons from a directory into a single SVG file.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
