@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { createFilter } from 'rollup-pluginutils';
+import glob from 'glob';
 
 import SVGStore from 'svgstore';
 import SVGO from 'svgo';
@@ -42,7 +43,10 @@ export default function store(options = {}) {
 		},
 
 		async load(id) {
-			return generated.get(id);
+			return {
+				code: `export default '${escapeQuotes(inlineNode(generated.get(id)))}'`,
+				map: { mappings: '' }
+			};
 		}
 	}
 }
