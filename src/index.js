@@ -43,6 +43,9 @@ export default function store(options = {}) {
 		},
 
 		async load(id) {
+			const escapeQuotes = (s) => s.replace(/([^\\])'/gm, "$1\\'");
+			const inlineNode = (s) => s.replace(/(\r\n|\n|\r)/gm, '');
+
 			return {
 				code: `export default '${escapeQuotes(inlineNode(generated.get(id)))}'`,
 				map: { mappings: '' }
