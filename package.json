@@ -31,13 +31,12 @@
   },
   "homepage": "https://github.com/meh/rollup-plugin-svg-store",
   "devDependencies": {
-    "open-cli": "^5.0.0",
+    "open-cli": "^6.0.1",
     "rollup": "^2.29.0",
-    "rollup-plugin-terser": "^7.0.0",
-    "sirv-cli": "^0.4.5"
+    "sirv-cli": "^1.0.6"
   },
   "dependencies": {
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
     "rollup-pluginutils": "^2.8.2",
     "svgo": "^1.3.2",

@@ -18,36 +18,37 @@ export default function store(options = {}) {
 				return null;
 			}
 
-			let files = await glob(importee, { cwd: path.dirname(importer) });
+			let files = glob.sync(importee, { cwd: path.dirname(importer) });
+
 			if (options.intercept) {
 				files = options.intercept(files.slice(), importee, importer);
 			}
 
+			const optimizer = new SVGO(options.optimize || {});
 			const store = SVGStore(options.store || {});
 			for (const file of files) {
-				const path = path.join(dir, file);
 				const id = path.parse(file).name;
-				const code = fs.readFileSync(path, { encoding: 'utf-8' });
+				const code = fs.readFileSync(file, { encoding: 'utf-8' });
+				const optimized = await optimizer.optimize(code, { path: file });
 
-				store.add(id, code);
+				store.add(`${options.prefix}${id}`, optimized.data);
 			}
-			
-			const optimizer = new SVGO(options.optimize || {});
-			const optimized = await optimizer.optimize(store.toString({ inline: true }), { path: "" });
 
-			const id = path.join(importerDirectory,
+			const id = path.join(path.dirname(importer),
 				importee.replace(/\W/g, (c) => `_${c.codePointAt(0)}_`));
 
-			generated.set(id, optimized);
+			generated.set(id, store.toString({ inline: true }));
+
 			return id;
 		},
 
 		async load(id) {
-			const escapeQuotes = (s) => s.replace(/([^\\])'/gm, "$1\\'");
-			const inlineNode = (s) => s.replace(/(\r\n|\n|\r)/gm, '');
+			if (!generated.get(id)) {
+				return null;
+			}
 
 			return {
-				code: `export default '${escapeQuotes(inlineNode(generated.get(id)))}'`,
+				code: `export default '${JSON.stringify(generated.get(id))}'`,
 				map: { mappings: '' }
 			};
 		}
