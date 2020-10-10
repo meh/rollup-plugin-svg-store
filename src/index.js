@@ -24,12 +24,22 @@ export default function store(options = {}) {
 				files = options.intercept(files.slice(), importee, importer);
 			}
 
-			const optimizer = new SVGO(options.optimize || {});
 			const store = SVGStore(options.store || {});
 			for (const file of files) {
 				const id = path.parse(file).name;
-				const code = fs.readFileSync(file, { encoding: 'utf-8' });
-				const optimized = await optimizer.optimize(code, { path: file });
+				const code = await fs.readFile(file, { encoding: 'utf-8' });
+
+				const optimized = await new SVGO({
+					plugins: [
+						{ removeViewBox: false },
+						{ reusePaths: true },
+						{ prefixIds: true,
+							delim: '-',
+							prefix: id },
+
+						...(options.optimize || [])
+					]
+				}).optimize(code, { path: file });
 
 				store.add(`${options.prefix}${id}`, optimized.data);
 			}
