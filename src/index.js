@@ -58,7 +58,7 @@ export default function store(options = {}) {
 			}
 
 			return {
-				code: `export default '${JSON.stringify(generated.get(id))}'`,
+				code: `export default ${JSON.stringify(generated.get(id))}`,
 				map: { mappings: '' }
 			};
 		}
